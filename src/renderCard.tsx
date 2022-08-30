@@ -17,6 +17,7 @@ type Parameters = {
     hideBadges?: string;
     borderRadius?: string;
     idleMessage?: string;
+    spotifyMessage?: string;
 };
 
 const elapsedTime = (timestamp: any) => {
@@ -45,19 +46,67 @@ const elapsedTime = (timestamp: any) => {
 const renderCard = async (body: LanyardTypes.Root, params: Parameters): Promise<string> => {
     let { data } = body;
 
-    let avatarBorderColor: string = "#747F8D",
+
+    let colors: {
+        statusOnline: string;
+        statusIdle: string;
+        statusDnd: string;
+        statusOffline: string;
+        background: string;
+        text: string;
+        username: string;
+        discrim: string;
+        userStatus: string;
+        idleMessage: string;
+        spotifyBackground: string;
+        spotifyMessage: string;
+        spotifySong: string;
+        spotifyArtist: string;
+        activityBackground: string;
+        activityName: string;
+        activityDetails: string;
+        activityState: string;
+        activityTimestamps: string;
+    } = {
+        statusOnline: "a6e3a1",
+        statusIdle: "fab387",
+        statusDnd: "eba0ac",
+        statusOffline: "7f849c",
+
+        background: "1e1e2e",
+        text: "cdd6f4",
+        username: "cdd6f4",
+        discrim: "bac2de",
+        userStatus: "a6adc8",
+
+        idleMessage: "585b70",
+
+        spotifyBackground: "a6d189",
+        spotifyMessage: "6c7086",
+        spotifySong: "45475a",
+        spotifyArtist: "585b70",
+
+        activityBackground: "89b4fa",
+        activityName: "6c7086",
+        activityDetails: "45475a",
+        activityState: "45475a",
+        activityTimestamps: "585b70"
+    };
+
+    let statusColor: string = colors.statusOffline,
         userStatus: string = "",
         avatarExtension: string = "webp",
         statusExtension: string = "webp",
         activity: any = false,
-        backgroundColor: string = "1a1c1f",
         theme = "dark",
         discrim = "show",
         hideStatus = "false",
         hideTimestamp = "false",
         hideBadges = "false",
         borderRadius = "10px",
-        idleMessage = "I'm not currently doing anything!";
+        idleMessage = "I'm not currently doing anything!",
+        spotifyMessage = "Listening to Spotify";
+
 
     if (data.activities[0]?.emoji?.animated) statusExtension = "gif";
     if (data.discord_user.avatar && data.discord_user.avatar.startsWith("a_")) avatarExtension = "gif";
@@ -67,11 +116,37 @@ const renderCard = async (body: LanyardTypes.Root, params: Parameters): Promise<
     if (params.hideBadges === "true") hideBadges = "true";
     if (params.hideDiscrim === "true") discrim = "hide";
     if (params.theme === "light") {
-        backgroundColor = "#eee";
         theme = "light";
+        // Todo: Selecting colors for light theme
+        colors = {
+            statusOnline: "a6e3a1",
+            statusIdle: "fab387",
+            statusDnd: "eba0ac",
+            statusOffline: "7f849c",
+
+            background: "1e1e2e",
+            text: "cdd6f4",
+            username: "cdd6f4",
+            discrim: "bac2de",
+            userStatus: "a6adc8",
+
+            idleMessage: "585b70",
+
+            spotifyBackground: "a6d189",
+            spotifyMessage: "6c7086",
+            spotifySong: "45475a",
+            spotifyArtist: "585b70",
+
+            activityBackground: "89b4fa",
+            activityName: "6c7086",
+            activityDetails: "45475a",
+            activityState: "45475a",
+            activityTimestamps: "585b70"
+        };
     }
-    if (params.bg) backgroundColor = params.bg;
+    if (params.bg) colors.background = params.bg;
     if (params.idleMessage) idleMessage = params.idleMessage;
+    if (params.spotifyMessage) spotifyMessage = params.spotifyMessage;
     if (params.borderRadius) borderRadius = params.borderRadius;
 
     let avatar: String;
@@ -107,16 +182,16 @@ const renderCard = async (body: LanyardTypes.Root, params: Parameters): Promise<
 
     switch (data.discord_status) {
         case "online":
-            avatarBorderColor = "#43B581";
+            statusColor = colors.statusOnline;
             break;
         case "idle":
-            avatarBorderColor = "#FAA61A";
+            statusColor = colors.statusIdle;
             break;
         case "dnd":
-            avatarBorderColor = "#F04747";
+            statusColor = colors.statusDnd;
             break;
         case "offline":
-            avatarBorderColor = "#747F8D";
+            statusColor = colors.statusOffline;
             break;
     }
 
@@ -140,8 +215,8 @@ const renderCard = async (body: LanyardTypes.Root, params: Parameters): Promise<
                         width: 400px;
                         height: 200px;
                         inset: 0;
-                        background-color: #${backgroundColor};
-                        color: ${theme === "dark" ? "#fff" : "#000"};
+                        background-color: #${colors.background};
+                        color: #${colors.text};
                         font-family: 'Century Gothic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
                         font-size: 16px;
                         display: flex;
@@ -177,7 +252,7 @@ const renderCard = async (body: LanyardTypes.Root, params: Parameters): Promise<
                                     overflow: visible;
                                     z-index: 1;
                                 ">
-                                    <rect fill="${avatarBorderColor}" x="4" y="54" width="16" height="16" rx="4" ry="4" stroke="#${backgroundColor}" style="stroke-width: 4px;"/>
+                                    <rect fill="#${statusColor}" x="4" y="54" width="16" height="16" rx="4" ry="4" stroke="#${colors.background}" style="stroke-width: 4px;"/>
                                 </svg>
                             </div>
                             <div style="
@@ -195,10 +270,11 @@ const renderCard = async (body: LanyardTypes.Root, params: Parameters): Promise<
                                     <h1 style="
                                         font-size: 1.15rem;
                                         margin: 0 5px 0 0;
+                                        color: #${colors.username};
                                     ">
                                     ${escape(data.discord_user.username)}${
                                         discrim !== "hide"
-                                            ? `<span style="color: ${theme === "dark" ? "#ccc" : "#666"}; font-weight: lighter;">#${
+                                            ? `<span style="color: #${colors.discrim}; font-weight: lighter;">#${
                                                 data.discord_user.discriminator
                                             }</span>`
                                             : ""
@@ -222,7 +298,7 @@ const renderCard = async (body: LanyardTypes.Root, params: Parameters): Promise<
                                     <h1 style="
                                         font-size: 0.9rem;
                                         margin-top: 16px;
-                                        color: ${theme === "dark" ? "#aaa" : "#333"};
+                                        color: #${colors.userStatus};
                                         font-weight: lighter;
                                         overflow: hidden;
                                         white-space: nowrap;
@@ -255,12 +331,12 @@ const renderCard = async (body: LanyardTypes.Root, params: Parameters): Promise<
                         ${
                             activity ? `
                             <svg xmlns="http://www.w3.org/2000/svg" style="overflow: visible;" fill="none" viewBox="0 0 294 20" height="21" width="400" preserveAspectRatio="none">
-                                <path d="M0 21V7.19143C0 7.19143 38.8172 -2.31216 87.1664 0.530784C138.272 1.7492 156.532 13.564 222.108 14.5019C266.093 14.5019 294 7.35388 294 7.35388V21H0Z" fill="#7289DA"/>
+                                <path d="M0 21V7.19143C0 7.19143 38.8172 -2.31216 87.1664 0.530784C138.272 1.7492 156.532 13.564 222.108 14.5019C266.093 14.5019 294 7.35388 294 7.35388V21H0Z" fill="#${colors.activityBackground}"/>
                             </svg>
                             <div style="
                                 display: flex;
                                 flex-direction: row;
-                                background-color: #7289DA;
+                                background-color: #${colors.activityBackground};
                                 border-radius: 0 0 ${borderRadius} ${borderRadius};
                                 height: 120px;
                                 font-size: 0.75rem;
@@ -303,10 +379,10 @@ const renderCard = async (body: LanyardTypes.Root, params: Parameters): Promise<
                                     style="
                                         width: 25px;
                                         height: 25px;
-                                        border-radius: 8px;
+                                        border-radius: ${borderRadius};
                                         margin-left: -28px;
                                         margin-bottom: -12px;
-                                        border: solid 5px #7289DA;
+                                        border: solid 5px #${colors.activityBackground};
                                     "/>` : ``
                                 }
                                 </div>
@@ -318,10 +394,10 @@ const renderCard = async (body: LanyardTypes.Root, params: Parameters): Promise<
                                             : "5px"
                                     };
                                     line-height: 1;
-                                    width: 279px;
+                                    width: 270px;
                                 ">
                                     <p style="
-                                        color: ${theme === "dark" ? "#fff" : "#000"};
+                                        color: #${colors.activityName};
                                         font-size: 0.85rem;
                                         font-weight: bold;
                                         overflow: hidden;
@@ -334,7 +410,7 @@ const renderCard = async (body: LanyardTypes.Root, params: Parameters): Promise<
                                             activity.details
                                                 ? `
                                             <p style="
-                                                color: ${theme === "dark" ? "#ccc" : "#777"};
+                                                color: #${colors.activityDetails};
                                                 overflow: hidden;
                                                 white-space: nowrap;
                                                 font-size: 0.85rem;
@@ -348,7 +424,7 @@ const renderCard = async (body: LanyardTypes.Root, params: Parameters): Promise<
                                             activity.state
                                                 ? `
                                             <p style="
-                                                color: ${theme === "dark" ? "#ccc" : "#777"};
+                                                color: #${colors.activityState};
                                                 overflow: hidden;
                                                 white-space: nowrap;
                                                 font-size: 0.85rem;
@@ -364,7 +440,7 @@ const renderCard = async (body: LanyardTypes.Root, params: Parameters): Promise<
                                         ${
                                             activity.timestamps && activity.timestamps.start && hideTimestamp !== "true" ? `
                                             <p style="
-                                                color: ${theme === "dark" ? "#ccc" : "#777"};
+                                                color: #${colors.activityTimestamps};
                                                 overflow: hidden;
                                                 white-space: nowrap;
                                                 font-size: 0.85rem;
@@ -383,7 +459,7 @@ const renderCard = async (body: LanyardTypes.Root, params: Parameters): Promise<
                 data.listening_to_spotify === true && !activity && data.activities[Object.keys(data.activities).length - 1].type === 2
                     ? `
                 <svg xmlns="http://www.w3.org/2000/svg" style="overflow: visible;" fill="none" viewBox="0 0 294 20" height="21" width="400" preserveAspectRatio="none">
-                    <path d="M0 21V7.19143C0 7.19143 38.8172 -2.31216 87.1664 0.530784C138.272 1.7492 156.532 13.564 222.108 14.5019C266.093 14.5019 294 7.35388 294 7.35388V21H0Z" fill="#1DB954"/>
+                    <path d="M0 21V7.19143C0 7.19143 38.8172 -2.31216 87.1664 0.530784C138.272 1.7492 156.532 13.564 222.108 14.5019C266.093 14.5019 294 7.35388 294 7.35388V21H0Z" fill="#${colors.spotifyBackground}"/>
                 </svg>
                 <div style="
                     display: flex;
@@ -391,7 +467,7 @@ const renderCard = async (body: LanyardTypes.Root, params: Parameters): Promise<
                     height: 120px;
                     font-size: 0.8rem;
                     padding-left: 18px;
-                    background-color: #1DB954;
+                    background-color: #${colors.spotifyBackground};
                     border-radius: 0 0 ${borderRadius} ${borderRadius};
                 ">
                     <img src="${await (async () => {
@@ -409,30 +485,28 @@ const renderCard = async (body: LanyardTypes.Root, params: Parameters): Promise<
                         color: #999;
                         margin-top: -3px;
                         line-height: 1;
-                        width: 279px;
+                        width: 270px;
                     ">
-                        <p style="font-size: 0.75rem; font-weight: bold; color: ${
-                            theme === "dark" ? "#E5E1E1" : "#0d943d"
-                        }; margin-bottom: 15px;">Listening to Spotify</p>
+                        <p style="font-size: 0.75rem; font-weight: bold; color: #${colors.spotifyMessage}; margin-bottom: 15px;">${spotifyMessage}</p>
                         <p style="
                             height: 15px;
-                            color: ${theme === "dark" ? "#fff" : "#000"};
+                            color: #${colors.spotifySong};
                             font-weight: bold;
-                            font-size: 0.85rem;
+                            font-size: 0.9rem;
                             overflow: hidden;
                             white-space: nowrap;
                             text-overflow: ellipsis;
-                            margin: 7px 0;
+                            margin: 5px 0;
                         ">${escape(data.spotify.song)}</p>
                         <p style="
-                            margin: 7px 0;
+                            margin: 5px 0;
                             height: 15px;
                             overflow: hidden;
                             white-space: nowrap;
                             font-size: 0.85rem;
                             text-overflow: ellipsis;
-                            color: ${theme === "dark" ? "#ccc" : "#777"};
-                        ">By ${escape(data.spotify.artist)}</p>
+                            color: #${colors.spotifyArtist};
+                        ">${escape(data.spotify.artist.replace(";", ","))}</p>
                     </div>
                 </div>
             ` : ``
@@ -449,7 +523,7 @@ const renderCard = async (body: LanyardTypes.Root, params: Parameters): Promise<
                     <p style="
                         font-style: italic;
                         font-size: 0.8rem;
-                        color: ${theme === "dark" ? "#aaa" : "#444"};
+                        color: #${colors.idleMessage};
                         height: auto;
                         text-align: center;
                     ">
