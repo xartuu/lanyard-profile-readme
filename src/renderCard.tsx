@@ -146,7 +146,6 @@ const renderCard = async (body: LanyardTypes.Root, params: Parameters): Promise<
                         font-size: 16px;
                         display: flex;
                         flex-direction: column;
-                        padding: 5px;
                         border-radius: ${borderRadius};
                     ">
                         <div style="
@@ -156,9 +155,6 @@ const renderCard = async (body: LanyardTypes.Root, params: Parameters): Promise<
                             display: flex;
                             flex-direction: row;
                             padding-bottom: 5px;
-                            border-bottom: solid 0.5px ${
-                                theme === "dark" ? "hsl(0, 0%, 100%, 10%)" : "hsl(0, 0%, 0%, 10%)"
-                            };
                         ">
                             <div style="
                                 display: flex;
@@ -168,8 +164,7 @@ const renderCard = async (body: LanyardTypes.Root, params: Parameters): Promise<
                             ">
                                 <img src="data:image/png;base64,${avatar}"
                                 style="
-                                    border: solid 3px ${avatarBorderColor};
-                                    border-radius: 50%;
+                                    border-radius: ${borderRadius};
                                     width: 50px;
                                     height: 50px;
                                     position: relative;
@@ -177,6 +172,13 @@ const renderCard = async (body: LanyardTypes.Root, params: Parameters): Promise<
                                     left: 50%;
                                     transform: translate(-50%, -50%);
                                 "/>
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                style="
+                                    overflow: visible;
+                                    z-index: 1;
+                                ">
+                                    <rect fill="${avatarBorderColor}" x="4" y="54" width="16" height="16" rx="4" ry="4" stroke="#${backgroundColor}" style="stroke-width: 4px;"/>
+                                </svg>
                             </div>
                             <div style="
                                 height: 80px;
@@ -252,13 +254,17 @@ const renderCard = async (body: LanyardTypes.Root, params: Parameters): Promise<
 
                         ${
                             activity ? `
+                            <svg xmlns="http://www.w3.org/2000/svg" style="overflow: visible;" fill="none" viewBox="0 0 294 20" height="21" width="400" preserveAspectRatio="none">
+                                <path d="M0 21V7.19143C0 7.19143 38.8172 -2.31216 87.1664 0.530784C138.272 1.7492 156.532 13.564 222.108 14.5019C266.093 14.5019 294 7.35388 294 7.35388V21H0Z" fill="#7289DA"/>
+                            </svg>
                             <div style="
                                 display: flex;
                                 flex-direction: row;
+                                background-color: #7289DA;
+                                border-radius: 0 0 ${borderRadius} ${borderRadius};
                                 height: 120px;
-                                margin-left: 15px;
                                 font-size: 0.75rem;
-                                padding-top: 18px;
+                                padding: 0 0 0 15px;
                             ">
                                 <div style="
                                     margin-right: 15px;
@@ -275,8 +281,7 @@ const renderCard = async (body: LanyardTypes.Root, params: Parameters): Promise<
                                         style="
                                             width: 80px;
                                             height: 80px;
-                                            border: solid 0.5px #222;
-                                            border-radius: 10px;
+                                            border-radius: ${borderRadius};
                                         "/>
                                     ` : `
                                     <img src="data:image/png;base64,${await encodeBase64(
@@ -296,11 +301,12 @@ const renderCard = async (body: LanyardTypes.Root, params: Parameters): Promise<
                                             : `https://cdn.discordapp.com/app-assets/${activity.application_id}/${activity.assets.small_image}.webp`
                                     )}"
                                     style="
-                                        width: 30px;
-                                        height: 30px;
-                                        border-radius: 50%;
-                                        margin-left: -26px;
-                                        margin-bottom: -8px;
+                                        width: 25px;
+                                        height: 25px;
+                                        border-radius: 8px;
+                                        margin-left: -28px;
+                                        margin-bottom: -12px;
+                                        border: solid 5px #7289DA;
                                     "/>` : ``
                                 }
                                 </div>
@@ -376,22 +382,26 @@ const renderCard = async (body: LanyardTypes.Root, params: Parameters): Promise<
             ${
                 data.listening_to_spotify === true && !activity && data.activities[Object.keys(data.activities).length - 1].type === 2
                     ? `
+                <svg xmlns="http://www.w3.org/2000/svg" style="overflow: visible;" fill="none" viewBox="0 0 294 20" height="21" width="400" preserveAspectRatio="none">
+                    <path d="M0 21V7.19143C0 7.19143 38.8172 -2.31216 87.1664 0.530784C138.272 1.7492 156.532 13.564 222.108 14.5019C266.093 14.5019 294 7.35388 294 7.35388V21H0Z" fill="#1DB954"/>
+                </svg>
                 <div style="
                     display: flex;
                     flex-direction: row;
                     height: 120px;
-                    margin-left: 15px;
                     font-size: 0.8rem;
-                    padding-top: 18px;
+                    padding-left: 18px;
+                    background-color: #1DB954;
+                    border-radius: 0 0 ${borderRadius} ${borderRadius};
                 ">
                     <img src="${await (async () => {
                         const album = await encodeBase64(data.spotify.album_art_url);
-                        if (album) return `data:image/png;base64,${album}" style="border: solid 0.5px #222;`;
+                        if (album) return `data:image/png;base64,${album}" style="`;
                         return 'https://lanyard.artuu.me/assets/unknown.png" style="filter: invert(100);';
                     })()}
                         width: 80px;
                         height: 80px;
-                        border-radius: 10px;
+                        border-radius: ${borderRadius};
                         margin-right: 15px;
                     "/>
 
@@ -402,8 +412,8 @@ const renderCard = async (body: LanyardTypes.Root, params: Parameters): Promise<
                         width: 279px;
                     ">
                         <p style="font-size: 0.75rem; font-weight: bold; color: ${
-                            theme === "dark" ? "#1CB853" : "#0d943d"
-                        }; margin-bottom: 15px;">LISTENING TO SPOTIFY...</p>
+                            theme === "dark" ? "#E5E1E1" : "#0d943d"
+                        }; margin-bottom: 15px;">Listening to Spotify</p>
                         <p style="
                             height: 15px;
                             color: ${theme === "dark" ? "#fff" : "#000"};
