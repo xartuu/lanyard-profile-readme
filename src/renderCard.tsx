@@ -269,7 +269,7 @@ const renderCard = async (body: LanyardTypes.Root, params: Parameters): Promise<
                                         activity.assets && activity.assets.large_image ? `
                                         <img src="data:image/png;base64,${await encodeBase64(
                                         activity.assets.large_image.startsWith("mp:external/")
-                                            ? `https://media.discordapp.net/external/${activity.assets.large_image.replace("mp:external/", "")}` 
+                                            ? `https://media.discordapp.net/external/${activity.assets.large_image.replace("mp:external/", "")}`
                                             : `https://cdn.discordapp.com/app-assets/${activity.application_id}/${activity.assets.large_image}.webp`
                                     )}"
                                         style="
